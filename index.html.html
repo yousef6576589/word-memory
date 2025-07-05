@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>لعبة تذكّر الكلمة</title>
+  <style>
+    body {
+      font-family: 'Tahoma', sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #fef9f1;
+      padding: 50px;
+      overflow-x: hidden;
+    }
+
+    .word-box {
+      font-size: 28px;
+      margin: 20px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    input, button {
+      font-size: 20px;
+      padding: 10px;
+      margin: 10px;
+    }
+
+    input {
+      width: 60%;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .message {
+      font-size: 24px;
+      color: #2e7d32;
+      margin-top: 30px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* النجوم */
+    .star {
+      position: fixed;
+      top: -50px;
+      font-size: 24px;
+      color: gold;
+      animation: fall 3s linear infinite;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh);
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎯 لعبة تذكّر الكلمة</h1>
+
+  <div id="intro">
+    <p>🧠 في كل جولة، ستُعرض عليك كلمة.</p>
+    <p>مهمتك هي كتابة كلمة ترتبط بها في ذهنك.</p>
+    <p>اللعبة فيها <strong>5 جولات</strong> فقط، وفي النهاية تنتظرك مكافأة 🌟!</p>
+    <button onclick="startGame()">ابدأ اللعب</button>
+  </div>
+
+  <div id="gameArea" class="hidden">
+    <div class="word-box" id="word">كلمة</div>
+    <input type="text" id="userInput" placeholder="ما الكلمة المرتبطة؟">
+    <br>
+    <button onclick="nextWord()">التالي</button>
+    <div id="roundCounter">الجولة: 1 من 5</div>
+  </div>
+
+  <div id="endMessage" class="hidden">
+    <p class="message">🎉 أحسنت! أنهيت اللعبة بنجاح!</p>
+    <p>🌟 مكافأتك: <strong>نجم التذكّر الذهبي</strong> 🌟</p>
+    <p>💬 استمر في تدريب ذاكرتك يوميًا، فأنت رائع!</p>
+    <button onclick="restartGame()">إعادة اللعب 🔁</button>
+  </div>
+
+  <!-- صوت الفوز -->
+  <audio id="winSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_f67706f14a.mp3?filename=success-fanfare-trumpets-6185.mp3"></audio>
+
+  <script>
+    const words = [
+      "شجرة", "قهوة", "مدرسة", "بحر", "كتاب", "طيور",
+      "سيارة", "سماء", "نهر", "مستشفى", "ورد", "نوم"
+    ];
+
+    let currentWord = "";
+    let round = 1;
+    const maxRounds = 5;
+
+    function getRandomWord() {
+      return words[Math.floor(Math.random() * words.length)];
+    }
+
+    function startGame() {
+      document.getElementById("intro").classList.add("hidden");
+      document.getElementById("gameArea").classList.remove("hidden");
+      round = 1;
+      nextWord();
+    }
+
+    function nextWord() {
+      const userAnswer = document.getElementById("userInput").value;
+      if (userAnswer.trim()) {
+        console.log(`جولة ${round}: "${currentWord}" => "${userAnswer}"`);
+      }
+
+      if (round > maxRounds) {
+        endGame();
+        return;
+      }
+
+      currentWord = getRandomWord();
+      document.getElementById("word").textContent = currentWord;
+      document.getElementById("userInput").value = "";
+      document.getElementById("userInput").focus();
+      document.getElementById("roundCounter").textContent = `الجولة: ${round} من ${maxRounds}`;
+      round++;
+    }
+
+    function endGame() {
+      document.getElementById("gameArea").classList.add("hidden");
+      document.getElementById("endMessage").classList.remove("hidden");
+
+      // تشغيل صوت الفوز
+      document.getElementById("winSound").play();
+
+      // تشغيل النجوم المتساقطة
+      for (let i = 0; i < 30; i++) {
+        const star = document.createElement("div");
+        star.className = "star";
+        star.textContent = "★";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.fontSize = (16 + Math.random() * 20) + "px";
+        document.body.appendChild(star);
+
+        // إزالة النجمة بعد انتهاء الحركة
+        setTimeout(() => star.remove(), 3000);
+      }
+    }
+
+    function restartGame() {
+      document.getElementById("endMessage").classList.add("hidden");
+      document.getElementById("intro").classList.remove("hidden");
+    }
+  </script>
+
+</body>
+</html>
